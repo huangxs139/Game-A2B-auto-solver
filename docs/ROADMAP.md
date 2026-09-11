@@ -127,11 +127,11 @@ PLANNED -> READY -> IN_PROGRESS -> REVIEW -> ACCEPTED
 
 Only the owner may mark a feature `ACCEPTED`.
 
-Initial status:
+Current working status:
 
 | Feature | Status  |
 | ------- | ------- |
-| FEAT0001   | PLANNED |
+| FEAT0001   | READY |
 | FEAT0002   | PLANNED |
 | FEAT0003   | PLANNED |
 | FEAT0004   | PLANNED |

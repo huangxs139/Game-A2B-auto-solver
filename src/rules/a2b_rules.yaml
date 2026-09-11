@@ -1,0 +1,173 @@
+format:
+  name: a2b-runtime-rules
+  version: 1
+  serialization: yaml
+  game: A=B
+  chapters_supported: [1, 2, 3, 4, 5, 6]
+
+syntax:
+  source_encoding: UTF-8
+  instruction_text_encoding: ASCII
+  whitespace:
+    significant: true
+    trimming: forbidden
+  comments:
+    marker: "#"
+    behavior: remove_the_first_marker_and_everything_after_it_on_the_line
+    comments_may_contain_non_ascii: true
+  lines:
+    blank_line: "A line whose effective content is empty"
+    instruction_line: "A non-blank effective line containing exactly one equal sign"
+    equal_sign_count_after_comment_removal: 1
+  sides:
+    empty_string_allowed: true
+    keyword_form: "(keyword)string"
+    keyword_must_be_at_side_start: true
+    maximum_keywords_per_side: 1
+  reserved_characters_by_chapter:
+    "1": ["="]
+    "2": ["=", "(", ")", "#"]
+    "3": ["=", "(", ")", "#"]
+    "4": ["=", "(", ")", "#"]
+    "5": ["=", "(", ")", "#"]
+    "6": ["=", "#"]
+
+keywords:
+  start:
+    available_chapters: [3, 4, 5]
+    allowed_sides: [left, right]
+  end:
+    available_chapters: [3, 4, 5]
+    allowed_sides: [left, right]
+  return:
+    available_chapters: [2, 3, 4, 5]
+    allowed_sides: [right]
+  once:
+    available_chapters: [4, 5]
+    allowed_sides: [left]
+
+keyword_combination_rules:
+  maximum_keywords_per_side: 1
+  cross_side_combinations: unrestricted
+  unknown_keywords: invalid
+  keyword_must_be_available_in_current_chapter: true
+  keyword_must_be_allowed_on_its_side: true
+
+chapters:
+  "1":
+    available_operations: [replace_leftmost_occurrence]
+    allowed_left_keywords: []
+    allowed_right_keywords: []
+  "2":
+    available_operations: [replace_leftmost_occurrence]
+    allowed_left_keywords: []
+    allowed_right_keywords: [return]
+  "3":
+    available_operations: [replace_leftmost_occurrence]
+    allowed_left_keywords: [start, end]
+    allowed_right_keywords: [start, end, return]
+  "4":
+    available_operations: [replace_leftmost_occurrence]
+    allowed_left_keywords: [start, end, once]
+    allowed_right_keywords: [start, end, return]
+  "5":
+    available_operations: [replace_leftmost_occurrence]
+    allowed_left_keywords: [start, end, once]
+    allowed_right_keywords: [start, end, return]
+  "6":
+    available_operations: [replace_leftmost_occurrence]
+    allowed_left_keywords: []
+    allowed_right_keywords: []
+
+operations:
+  replace_leftmost_occurrence:
+    description: "Replace the leftmost matching occurrence of the left side"
+    matching:
+      default:
+        condition: "left_string_occurs_in_operating_string"
+        selection: leftmost_occurrence
+      empty_left_string:
+        always_matches: true
+        match_index: 0
+      left_keyword_effects:
+        start:
+          condition: "left_string_is_at_the_start_of_the_operating_string"
+          selected_match: prefix
+        end:
+          condition: "left_string_is_at_the_end_of_the_operating_string"
+          selected_match: suffix
+        once:
+          effect: "does_not_change_matching_semantics"
+    replacement:
+      split_operating_string_as: "prefix + matched_string + suffix"
+      no_right_keyword: "prefix + right_string + suffix"
+      right_keyword_effects:
+        start: "right_string + prefix + suffix"
+        end: "prefix + suffix + right_string"
+        return:
+          output: right_string
+          terminate_immediately: true
+    empty_right_string:
+      behavior: "remove_the_selected_matched_string"
+    empty_left_and_right_strings:
+      behavior: "successful_no_content_replacement"
+
+control_flow:
+  initial_operating_string: input_string
+  scan_order: top_to_bottom
+  executable_instruction:
+    selection: first_currently_executable_instruction
+  after_successful_instruction:
+    action: restart_scan_from_first_line
+  normal_termination:
+    condition: "a_complete_scan_finds_no_executable_instruction"
+    output: current_operating_string
+  blank_lines:
+    executable: false
+  comments:
+    executable: false
+
+once_behavior:
+  keyword: once
+  initial_state: not_consumed
+  successful_execution:
+    action: mark_the_instruction_consumed
+  consumed_instruction:
+    executable: false
+  failed_match:
+    action: leave_instruction_unconsumed
+  state_scope: one_executor_call
+  other_semantics:
+    preserved: true
+
+cycle_detection:
+  enabled: true
+  state_components:
+    - operating_string
+    - parsed_code_snippet_with_whitespace_preserved
+    - consumed_once_instruction_lines
+  repeated_state_condition: "execution_enters_the_same_state_twice"
+  result: nontermination
+  execution_must_not_continue_after_detection: true
+
+program_validation:
+  malformed_program:
+    classification: invalid_candidate
+    executor_error: false
+  invalid_conditions:
+    - non_blank_effective_line_does_not_contain_exactly_one_equal_sign
+    - invalid_keyword
+    - keyword_not_available_in_current_chapter
+    - keyword_on_disallowed_side
+    - more_than_one_keyword_on_one_side
+    - reserved_character_used_in_a_literal_side
+    - non_ascii_character_used_in_instruction_text
+
+execution_results:
+  required_outcomes:
+    - normal_termination
+    - immediate_return_termination
+    - nontermination_detected
+    - invalid_program
+    - executor_error
+  executor_error_definition: "An error raised by Executor infrastructure or implementation"
