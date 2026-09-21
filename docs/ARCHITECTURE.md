@@ -346,6 +346,12 @@ No empty placeholder `.solve` files are created.
 
 Manager owns authoritative `.solve` persistence.
 
+Manager determines normal Solver eligibility from persisted puzzle status according to `REQUIREMENTS.md`.
+
+When a newly produced candidate passes authoritative full validation, Manager persists it as the current candidate with `status: pending`. This includes successful replacement of a candidate previously marked `re-solve`.
+
+When processing `re-solve`, the existing candidate and persisted owner decision remain authoritative until the replacement candidate passes authoritative full validation.
+
 A superseded failed candidate may be replaced by the newly validated candidate. Separate failed-candidate history is not required.
 
 ---

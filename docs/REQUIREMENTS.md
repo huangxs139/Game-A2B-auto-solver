@@ -204,6 +204,31 @@ Owner-controlled state includes whether a candidate has been:
 * rejected;
 * explicitly returned for re-solving.
 
+### Status and Solver Eligibility
+
+A persisted `.solve` state with a current candidate must contain an owner-decision `status` with exactly one of:
+
+* `pending` — the locally valid candidate awaits an owner decision;
+* `accepted` — the owner accepted the candidate through real-game validation;
+* `rejected` — the owner rejected the candidate and no automatic re-solving is currently requested;
+* `re-solve` — the owner explicitly requests a replacement candidate.
+
+For a normal `solve all` run:
+
+* a puzzle with no persisted state or no current candidate requires Solver work;
+* a puzzle with `status: re-solve` requires Solver work;
+* a puzzle with `status: pending`, `accepted`, or `rejected` is skipped.
+
+After Manager successfully full-validates a newly produced candidate, it must persist that candidate with `status: pending`. This applies both to an initially unsolved puzzle and to a puzzle previously marked `re-solve`.
+
+When re-solving a puzzle marked `re-solve`, the existing candidate and `re-solve` state remain authoritative until a replacement candidate passes full local validation. After successful replacement validation, Manager replaces the current candidate and changes `status` to `pending`.
+
+Owner-controlled `accepted`, `rejected`, and `re-solve` decisions must not otherwise be inferred or created automatically.
+
+A `rejected` or `re-solve` state may optionally contain an owner-provided `reason` string for explanatory purposes.
+
+`reason` is metadata only. Runtime components must not infer Solver eligibility or other control-flow behavior from it; `status` alone governs such behavior. When Manager replaces a `re-solve` candidate and changes its status to `pending`, the associated `reason` must be removed.
+
 Only the owner may modify owner-acceptance decisions. Automated components must never mark real-game validation as successfully completed.
 
 A superseded failed candidate may be replaced; separate candidate-history retention is not required.
