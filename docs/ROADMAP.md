@@ -132,8 +132,8 @@ Current working status:
 | Feature | Status  |
 | ------- | ------- |
 | FEAT0001   | ACCEPTED |
-| FEAT0002   | READY |
-| FEAT0003   | PLANNED |
-| FEAT0004   | PLANNED |
+| FEAT0002   | ACCEPTED |
+| FEAT0003   | ACCEPTED |
+| FEAT0004   | READY |
 | FEAT0005   | PLANNED |
 | FEAT0006   | PLANNED |
