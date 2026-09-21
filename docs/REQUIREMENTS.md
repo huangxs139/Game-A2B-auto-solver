@@ -58,7 +58,7 @@ Problem = (ChapterRules, InputOutputPairs, min_lines)
 
 A locally valid candidate must:
 
-1. contain no more than `min_lines` instruction lines;
+1. contain no more than `min_lines` lines. Every line counts toward this limit, including instruction lines, blank lines, and comment-only lines.
 2. when executed as its final serialized A=B program through the Executor, produce the expected output for every supplied input.
 
 The Solver need not find the shortest possible program. Once an acceptable candidate is found, it must stop searching for alternative or shorter solutions for that puzzle.
