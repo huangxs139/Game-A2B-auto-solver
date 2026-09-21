@@ -104,3 +104,13 @@ Use the current Feature specification as the immediate implementation scope, `RE
 Make ordinary engineering decisions independently inside those boundaries.
 
 When correct continuation would require changing normative content, project scope, architecture, acceptance criteria, protected Rules, authoritative puzzle data, or another owner-reserved decision, stop and ask the owner.
+
+## 9. Temporary Test Execution
+
+Short, simple, foreground-only diagnostic commands may be executed inline.
+
+Temporary tests or diagnostic programs that are long-running, multi-step, non-trivial, or intended to run in the background must not be embedded directly as large inline shell commands.
+
+Such tests must instead be written to a temporary script or other appropriate temporary file so that the executed logic is inspectable, reproducible, and can be safely restarted or terminated.
+
+Temporary diagnostic artifacts must not be committed unless explicitly authorized or intentionally promoted into the project's permanent test suite.
