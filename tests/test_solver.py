@@ -14,6 +14,7 @@ from src.solver import (
     PuzzleRepository,
     SolverContext,
     SolverFramework,
+    create_solver_algorithm,
 )
 
 
@@ -107,6 +108,72 @@ class SolverFrameworkTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValueError, "unequal input/output"):
             repository.resolve("c1_2_bad")
+
+
+class ChapterOneSynthesisTests(unittest.TestCase):
+    def test_synthesizes_every_chapter_one_candidate_from_puzzle_data(self) -> None:
+        framework = SolverFramework()
+        problem_ids = sorted(
+            path.stem for path in Path("test_data").glob("c1_*.a2b")
+        )
+
+        self.assertEqual(6, len(problem_ids))
+        for problem_id in problem_ids:
+            with self.subTest(problem_id=problem_id):
+                result = framework.solve(problem_id, create_solver_algorithm)
+                puzzle = PuzzleRepository().resolve(problem_id)
+
+                self.assertGreaterEqual(len(result.feedback_history), 2)
+                self.assertFalse(result.feedback_history[0].proposal.submit)
+                self.assertTrue(result.feedback_history[-1].passed)
+                self.assertTrue(result.feedback_history[-1].proposal.submit)
+                self.assertLessEqual(
+                    len(result.submitted_code.splitlines()), puzzle.min_lines
+                )
+
+
+class ChapterTwoSynthesisTests(unittest.TestCase):
+    def test_synthesizes_every_chapter_two_candidate_from_puzzle_data(self) -> None:
+        framework = SolverFramework()
+        problem_ids = sorted(
+            path.stem for path in Path("test_data").glob("c2_*.a2b")
+        )
+
+        self.assertEqual(9, len(problem_ids))
+        for problem_id in problem_ids:
+            with self.subTest(problem_id=problem_id):
+                result = framework.solve(problem_id, create_solver_algorithm)
+                puzzle = PuzzleRepository().resolve(problem_id)
+
+                self.assertGreaterEqual(len(result.feedback_history), 2)
+                self.assertFalse(result.feedback_history[0].proposal.submit)
+                self.assertTrue(result.feedback_history[-1].passed)
+                self.assertTrue(result.feedback_history[-1].proposal.submit)
+                self.assertLessEqual(
+                    len(result.submitted_code.splitlines()), puzzle.min_lines
+                )
+
+
+class ChapterThreeSynthesisTests(unittest.TestCase):
+    def test_synthesizes_every_chapter_three_candidate_from_puzzle_data(self) -> None:
+        framework = SolverFramework()
+        problem_ids = sorted(
+            path.stem for path in Path("test_data").glob("c3_*.a2b")
+        )
+
+        self.assertEqual(7, len(problem_ids))
+        for problem_id in problem_ids:
+            with self.subTest(problem_id=problem_id):
+                result = framework.solve(problem_id, create_solver_algorithm)
+                puzzle = PuzzleRepository().resolve(problem_id)
+
+                self.assertGreaterEqual(len(result.feedback_history), 2)
+                self.assertFalse(result.feedback_history[0].proposal.submit)
+                self.assertTrue(result.feedback_history[-1].passed)
+                self.assertTrue(result.feedback_history[-1].proposal.submit)
+                self.assertLessEqual(
+                    len(result.submitted_code.splitlines()), puzzle.min_lines
+                )
 
 
 if __name__ == "__main__":
