@@ -142,13 +142,15 @@ Conceptually, full validation runs the final serialized candidate against every 
 * full output correctness;
 * valid termination;
 * absence of execution errors;
-* `min_lines`.
+* `min_lines`;
+* compliance with the program-line length limit;
+* no operating-string state exceeding its length limit.
 
 Validation outcomes:
 
 ### PASS
 
-All cases pass and `min_lines` is satisfied.
+All cases pass and all applicable line-count and length limits are satisfied.
 
 Manager may create/update the corresponding `.solve`.
 

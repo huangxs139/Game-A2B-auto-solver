@@ -1,6 +1,6 @@
 format:
   name: a2b-runtime-rules
-  version: 1
+  version: 2
   serialization: yaml
   game: A=B
   chapters_supported: [1, 2, 3, 4, 5, 6]
@@ -112,6 +112,25 @@ operations:
     empty_left_and_right_strings:
       behavior: "successful_no_content_replacement"
 
+limits:
+  program_lines:
+    maximum_characters: 255
+    measured_on: raw_serialized_line_before_comment_removal
+    line_terminator: "\n"
+    line_terminator_counts: true
+    final_logical_line_is_treated_as_terminated: true
+    violation_classification: invalid_candidate
+    execution_result: invalid_program
+  operating_string:
+    maximum_characters: 255
+    measured_in: characters
+    checked_states:
+      - initial_input
+      - result_after_each_successful_instruction
+      - immediate_return_result
+    violation_classification: invalid_candidate
+    execution_result: invalid_program
+
 control_flow:
   initial_operating_string: input_string
   scan_order: top_to_bottom
@@ -162,6 +181,8 @@ program_validation:
     - more_than_one_keyword_on_one_side
     - reserved_character_used_in_a_literal_side
     - non_ascii_character_used_in_instruction_text
+    - raw_serialized_program_line_exceeds_maximum_characters
+    - operating_string_state_exceeds_maximum_characters
 
 execution_results:
   required_outcomes:

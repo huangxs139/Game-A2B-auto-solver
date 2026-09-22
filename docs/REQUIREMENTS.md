@@ -59,7 +59,9 @@ Problem = (ChapterRules, InputOutputPairs, min_lines)
 A locally valid candidate must:
 
 1. contain no more than `min_lines` lines. Every line counts toward this limit, including instruction lines, blank lines, and comment-only lines.
-2. when executed as its final serialized A=B program through the Executor, produce the expected output for every supplied input.
+2. contain no program line longer than 255 characters. Length is measured on the raw serialized line before comment removal and includes its trailing `\n`; therefore, a line may contain at most 254 non-newline characters. Every logical line, including the final logical line, is treated as terminated by one `\n` for this measurement.
+3. for every supplied input, never have an operating-string state longer than 255 characters. This limit applies to the initial input and to the result of every successfully executed instruction, including an immediate `(return)` result.
+4. when executed as its final serialized A=B program through the Executor, produce the expected output for every supplied input.
 
 The Solver need not find the shortest possible program. Once an acceptable candidate is found, it must stop searching for alternative or shorter solutions for that puzzle.
 
@@ -74,6 +76,7 @@ One machine-readable representation of the known A=B rules must serve as the aut
 It must represent the behavior needed for all six chapters, including:
 
 * available instructions;
+* program-line and operating-string length limits;
 * instruction syntax;
 * instruction semantics;
 * execution-flow semantics;
@@ -98,6 +101,8 @@ The project must provide an Executor capable of executing serialized A=B program
 Programs may enter infinite execution cycles. Executor must detect nontermination caused by repeated execution states or otherwise prevent invalid looping programs from running indefinitely.
 
 Correct A=B solutions are expected to terminate.
+
+Executor must enforce both program-line and operating-string length limits from Rules.
 
 Historical chapter-specific simulators may be inspected, tested, refactored, replaced, or redesigned.
 
@@ -172,9 +177,11 @@ Solver may validate candidates against individual cases, subsets, progressively 
 Before a candidate becomes the current official candidate:
 
 1. serialize it into final native A=B instruction text;
-2. execute that exact representation through Executor;
-3. pass every supplied input/output pair;
-4. satisfy `min_lines`.
+2. satisfy `min_lines`.
+3. satisfy the 255-character raw program-line limit;
+4. execute that exact representation through Executor;
+5. never exceed the 255-character operating-string limit during any supplied case;
+6. produce the expected output for every supplied input.
 
 Only the final serialized A=B representation is authoritative. Solver-internal ASTs, tokens, objects, or other representations are implementation details.
 
@@ -398,7 +405,7 @@ A CLI process ending does not imply puzzle or project completion.
 
 ### Local Candidate Success
 
-A puzzle has a locally valid candidate when its final serialized program satisfies `min_lines` and passes every supplied input/output pair through Executor.
+A puzzle has a locally valid candidate when its final serialized program satisfies `min_lines` and the program-line length limit, never exceeds the operating-string length limit during any supplied case, and produces the expected output for every supplied input through Executor.
 
 This is not final acceptance.
 

@@ -136,4 +136,4 @@ Current working status:
 | FEAT0003   | ACCEPTED |
 | FEAT0004   | ACCEPTED |
 | FEAT0005   | ACCEPTED |
-| FEAT0006   | READY |
+| FEAT0006   | ACCEPTED |
