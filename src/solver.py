@@ -807,7 +807,15 @@ def _numeric_candidates(puzzle: Puzzle) -> Iterable[str]:
         ) = _fresh_symbols(puzzle, 7)
         yield "\n".join(
             (
-                f"(once)1={left_guard}{left_unary}",
+                f"{left_unary}{product}={product}{left_unary}",
+                f"{right_unary}{product}={product}{right_unary}",
+                f"{boundary}{product}={carry}{boundary}",
+                f"1{carry}={carry}0",
+                f"0{carry}=1",
+                f"(start){carry}=(start)1",
+                f"{left_unary}{right_unary}="
+                f"{right_unary}{left_unary}{product}",
+                f"(once)1=(start)0{boundary}{left_guard}{left_unary}",
                 f"{left_unary}1=1{left_unary * 2}",
                 f"{left_unary}0=1{left_unary}",
                 f"{left_guard}1={left_guard}{left_unary}",
@@ -817,16 +825,8 @@ def _numeric_candidates(puzzle: Puzzle) -> Iterable[str]:
                 f"{right_unary}0=1{right_unary}",
                 f"{right_guard}1={right_guard}{right_unary}",
                 f"{right_guard}=",
-                f"{left_unary}{right_unary}="
-                f"{right_unary}{left_unary}{product}",
-                f"{product}{right_unary}={right_unary}{product}",
                 f"{right_unary}=",
                 f"{left_unary}=",
-                f"(once)=(start)0{boundary}",
-                f"{boundary}{product}={carry}{boundary}",
-                f"1{carry}={carry}0",
-                f"0{carry}=1",
-                f"(start){carry}=(start)1",
                 f"{boundary}=",
             )
         )

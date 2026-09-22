@@ -1,0 +1,10 @@
+{
+  "problem_id": "c5_6_div",
+  "candidate": "(once)1=|@\n@1=1@@\n@0=1@\n|1=|@\n|=\n(once)/1=/$\n$1=1$$\n$0=1$\n/1=/$\n(once)=(end)%\n(start)/=(start)^\n(start)&>=(start)^\n>/=/$\n/$=&>\n>&=&>\n@&=*\n*>=>*\n*$=&>\n*%=/%+\n>=@\n$=\n^=\n%+=+%\n@+=+@\n@%=%@\n(once)=(start)0-\n-+=_-\n1_=_0\n0_=1\n(start)_=(start)1\n-=\n%=,0<\n<@=_<\n,_=,1\n<=",
+  "local_validation": {
+    "passed": true,
+    "case_count": 961,
+    "line_count": 35
+  },
+  "status": "accepted"
+}

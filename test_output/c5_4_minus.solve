@@ -1,0 +1,10 @@
+{
+  "problem_id": "c5_4_minus",
+  "candidate": "-1=-|\n|1=1||\n|0=1|\n-|=@-\n0@=@1\n(start)1@=(start)\n1@=0\n-=",
+  "local_validation": {
+    "passed": true,
+    "case_count": 465,
+    "line_count": 8
+  },
+  "status": "accepted"
+}

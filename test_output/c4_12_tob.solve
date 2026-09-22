@@ -1,0 +1,10 @@
+{
+  "problem_id": "c4_12_tob",
+  "candidate": "(once)b=a|b\nb|=|b\nc|b=|bc\na|=(end)|b\n|b=\na=c",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3279,
+    "line_count": 6
+  },
+  "status": "accepted"
+}

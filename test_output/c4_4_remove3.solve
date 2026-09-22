@@ -1,0 +1,10 @@
+{
+  "problem_id": "c4_4_remove3",
+  "candidate": "(once)=(end)|||\na|=\nb|=|b\nc|=|c\n|=",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3279,
+    "line_count": 5
+  },
+  "status": "accepted"
+}

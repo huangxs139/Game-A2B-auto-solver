@@ -1,0 +1,10 @@
+{
+  "problem_id": "c5_1_count",
+  "candidate": "a1=1aa\na0=1a\n1=a",
+  "local_validation": {
+    "passed": true,
+    "case_count": 63,
+    "line_count": 3
+  },
+  "status": "accepted"
+}

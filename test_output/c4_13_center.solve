@@ -1,0 +1,10 @@
+{
+  "problem_id": "c4_13_center",
+  "candidate": "(once)=(start)||||||||||||||||||||||||||||||||||||||||||||||||||||\n|a=(end)a\n|b=(end)b\n|c=(end)c\n(start)a=(return)a\n(start)b=(return)b\n(start)c=(return)c",
+  "local_validation": {
+    "passed": true,
+    "case_count": 2460,
+    "line_count": 7
+  },
+  "status": "accepted"
+}

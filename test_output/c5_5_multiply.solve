@@ -1,0 +1,10 @@
+{
+  "problem_id": "c5_5_multiply",
+  "candidate": "@^=^@\n%^=^%\n&^=+&\n1+=+0\n0+=1\n(start)+=(start)1\n@%=%@^\n(once)1=(start)0&|@\n@1=1@@\n@0=1@\n|1=|@\n|=\n(once)*1=$%\n%1=1%%\n%0=1%\n$1=$%\n$=\n%=\n@=\n&=",
+  "local_validation": {
+    "passed": true,
+    "case_count": 961,
+    "line_count": 20
+  },
+  "status": "accepted"
+}

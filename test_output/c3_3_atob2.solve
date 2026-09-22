@@ -1,0 +1,10 @@
+{
+  "problem_id": "c3_3_atob2",
+  "candidate": "(start)a=(end)|\n|=(start)b\n(end)a=(start)@\n@=(end)b",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3279,
+    "line_count": 4
+  },
+  "status": "accepted"
+}

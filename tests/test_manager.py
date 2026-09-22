@@ -12,6 +12,7 @@ import time
 import unittest
 from unittest.mock import patch
 
+from src.executor import TerminationKind
 from src.manager import (
     Manager,
     PuzzleStateError,
@@ -52,6 +53,21 @@ class _RetryAlgorithm:
         return CandidateProposal("a=b", submit=True)
 
 
+class _ReplacementAlgorithm:
+    def __init__(self, context: SolverContext) -> None:
+        self._attempt = 0
+
+    def propose(self, feedback: CandidateFeedback | None) -> CandidateProposal:
+        self._attempt += 1
+        if self._attempt == 1:
+            return CandidateProposal("a=b", submit=True)
+        if feedback is None or not any(
+            "identical" in reason for reason in feedback.failure_reasons
+        ):
+            raise AssertionError("duplicate replacement feedback was not returned")
+        return CandidateProposal("a=c\nc=b", submit=True)
+
+
 class _FailingAlgorithm:
     def __init__(self, context: SolverContext) -> None:
         pass
@@ -77,6 +93,10 @@ def _make_retry_algorithm(context: SolverContext) -> _RetryAlgorithm:
     return _RetryAlgorithm(context)
 
 
+def _make_replacement_algorithm(context: SolverContext) -> _ReplacementAlgorithm:
+    return _ReplacementAlgorithm(context)
+
+
 def _make_failing_algorithm(context: SolverContext) -> _FailingAlgorithm:
     return _FailingAlgorithm(context)
 
@@ -96,13 +116,15 @@ class ManagerWorkflowTests(unittest.TestCase):
         self.puzzle_directory.mkdir()
         self.context = mp.get_context("spawn")
 
-    def _write_puzzle(self, problem_id: str, chapter: int) -> None:
+    def _write_puzzle(
+        self, problem_id: str, chapter: int, *, min_lines: int = 1
+    ) -> None:
         (self.puzzle_directory / f"{problem_id}.a2b").write_text(
             json.dumps(
                 {
                     "id": problem_id,
                     "chapter": chapter,
-                    "min_lines": 1,
+                    "min_lines": min_lines,
                     "input": ["a"],
                     "output": ["b"],
                 }
@@ -116,11 +138,12 @@ class ManagerWorkflowTests(unittest.TestCase):
         status: str,
         *,
         reason: str | None = None,
+        candidate: str = "a=b",
     ) -> None:
         self.output_directory.mkdir(exist_ok=True)
         state = {
             "problem_id": problem_id,
-            "candidate": "a=b",
+            "candidate": candidate,
             "local_validation": {
                 "passed": True,
                 "case_count": 1,
@@ -154,6 +177,7 @@ class ManagerWorkflowTests(unittest.TestCase):
                 problem_id,
                 status,
                 reason="try again" if status == "re-solve" else None,
+                candidate="a=b# old" if status == "re-solve" else "a=b",
             )
         self._write_puzzle("c1_5_missing", 1)
         self._write_puzzle("c1_6_initial", 1)
@@ -187,6 +211,28 @@ class ManagerWorkflowTests(unittest.TestCase):
         assert state is not None
         self.assertEqual("a=b", state.candidate)
         reports = tuple(self.report_directory.glob("c1_1_retry_*.report.json"))
+        self.assertEqual(2, len(reports))
+
+    def test_re_solve_rejects_identical_candidate_and_persists_replacement(
+        self,
+    ) -> None:
+        self._write_puzzle("c1_1_resolve", 1, min_lines=2)
+        self._write_state(
+            "c1_1_resolve",
+            "re-solve",
+            reason="replace this candidate",
+        )
+
+        summary = self._manager(_make_replacement_algorithm).solve_all(debug=True)
+
+        self.assertEqual(1, summary.validation_failures)
+        self.assertEqual(1, summary.solved)
+        state = PuzzleStateRepository(self.output_directory).load("c1_1_resolve")
+        assert state is not None
+        self.assertEqual("a=c\nc=b", state.candidate)
+        self.assertEqual("pending", state.status)
+        self.assertIsNone(state.reason)
+        reports = tuple(self.report_directory.glob("c1_1_resolve_*.report.json"))
         self.assertEqual(2, len(reports))
 
     def test_runs_different_chapters_concurrently(self) -> None:
@@ -267,6 +313,22 @@ class ManagerWorkflowTests(unittest.TestCase):
         self.assertEqual(2, result.line_count)
         assert result.feedback is not None
         self.assertIn("2 lines", result.feedback.failure_reasons[0])
+
+    def test_length_limit_violation_is_a_candidate_failure(self) -> None:
+        self._write_puzzle("c1_1_length", 1)
+        puzzle = PuzzleRepository(self.puzzle_directory).resolve("c1_1_length")
+        candidate = "a=b#" + "x" * 251
+
+        result = validate_candidate(puzzle, candidate)
+
+        self.assertEqual(ValidationOutcome.FAIL, result.outcome)
+        self.assertIsNone(result.error)
+        assert result.feedback is not None
+        self.assertEqual(1, len(result.feedback.trials))
+        self.assertEqual(
+            TerminationKind.INVALID_PROGRAM,
+            result.feedback.trials[0].execution.termination,
+        )
 
     def test_validation_infrastructure_error_is_distinct_from_candidate_failure(
         self,

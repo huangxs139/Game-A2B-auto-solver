@@ -1,0 +1,10 @@
+{
+  "problem_id": "c3_6_most2",
+  "candidate": "ab=(end)|c\nba=(end)|c\nca=ac\ncb=bc\nc|c=(end)|\nac=(end)|\nbc=(end)|\na|=aa\nb|=bb\n|=c",
+  "local_validation": {
+    "passed": true,
+    "case_count": 2589,
+    "line_count": 10
+  },
+  "status": "accepted"
+}

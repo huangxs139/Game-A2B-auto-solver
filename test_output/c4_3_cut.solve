@@ -1,0 +1,10 @@
+{
+  "problem_id": "c4_3_cut",
+  "candidate": "(once)=(start)|||\n|a=\n|b=\n|c=",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3267,
+    "line_count": 4
+  },
+  "status": "accepted"
+}

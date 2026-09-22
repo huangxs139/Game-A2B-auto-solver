@@ -1,0 +1,10 @@
+{
+  "problem_id": "c2_4_remainder",
+  "candidate": "b=a\nc=a\naaaa=a\naaa=0\naa=2\na=1",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3279,
+    "line_count": 6
+  },
+  "status": "accepted"
+}

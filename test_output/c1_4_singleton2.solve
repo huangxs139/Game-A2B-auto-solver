@@ -1,0 +1,10 @@
+{
+  "problem_id": "c1_4_singleton2",
+  "candidate": "aaa=aa\naa=",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3279,
+    "line_count": 2
+  },
+  "status": "accepted"
+}

@@ -1,0 +1,10 @@
+{
+  "problem_id": "c2_2_aaa",
+  "candidate": "b=\nc=\naaa=(return)true\n=(return)false",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3279,
+    "line_count": 4
+  },
+  "status": "accepted"
+}

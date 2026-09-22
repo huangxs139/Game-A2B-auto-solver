@@ -1,0 +1,10 @@
+{
+  "problem_id": "c6_2_palindrome2",
+  "candidate": "b=|a|\nc=||a||\na@=@a\n|@=@|\n$a=a$\n$|=|$\n%a=a%\n%|=|%\na$=\n|%=\n@$=true\n@%=true\n$=^\n%=^\na^=^\n|^=^\n@^=false\n@a=@$\n@|=@%\n@=true\n|=|@\naa=a@a",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3276,
+    "line_count": 22
+  },
+  "status": "accepted"
+}

@@ -1,0 +1,10 @@
+{
+  "problem_id": "c6_1_hello3",
+  "candidate": "b=a\nc=a\naa=a\na=helloworld",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3279,
+    "line_count": 4
+  },
+  "status": "accepted"
+}

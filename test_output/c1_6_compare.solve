@@ -1,0 +1,10 @@
+{
+  "problem_id": "c1_6_compare",
+  "candidate": "ab=\nba=\naa=a\nbb=b",
+  "local_validation": {
+    "passed": true,
+    "case_count": 1696,
+    "line_count": 4
+  },
+  "status": "accepted"
+}
