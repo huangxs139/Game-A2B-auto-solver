@@ -135,10 +135,11 @@ class CandidateFeedback:
 
     proposal: CandidateProposal
     trials: tuple[TrialResult, ...]
+    failure_reasons: tuple[str, ...] = ()
 
     @property
     def passed(self) -> bool:
-        return all(
+        return not self.failure_reasons and all(
             trial.matches_expected_output and trial.execution.terminated_normally
             for trial in self.trials
         )
@@ -160,6 +161,56 @@ class SolvingAlgorithm(Protocol):
 
 
 AlgorithmFactory = Callable[[SolverContext], SolvingAlgorithm]
+
+
+class SolverSession:
+    """Retain one algorithm instance across Manager validation attempts."""
+
+    def __init__(
+        self,
+        *,
+        puzzle: Puzzle,
+        algorithm: SolvingAlgorithm,
+        executor: Executor,
+        debug: bool,
+    ) -> None:
+        self.puzzle = puzzle
+        self._algorithm = algorithm
+        self._executor = executor
+        self._debug = debug
+        self._history: list[CandidateFeedback] = []
+        self._submitted_proposal: CandidateProposal | None = None
+
+    def run_until_submission(
+        self, validation_feedback: CandidateFeedback | None = None
+    ) -> SolverRunResult:
+        """Continue search until the algorithm submits its next candidate."""
+
+        feedback = validation_feedback
+        if self._submitted_proposal is not None and feedback is None:
+            raise ValueError("a submitted candidate requires validation feedback")
+        if feedback is not None:
+            if self._submitted_proposal is None:
+                raise ValueError("validation feedback has no prior submission")
+            if feedback.proposal.code != self._submitted_proposal.code:
+                raise ValueError("validation feedback does not match prior submission")
+            if feedback.passed:
+                raise ValueError("a passing submission cannot continue solving")
+            self._history.append(feedback)
+
+        while True:
+            proposal = self._algorithm.propose(feedback)
+            SolverFramework._validate_proposal(proposal, len(self.puzzle.inputs))
+            feedback = SolverFramework._trial_candidate(
+                self._executor,
+                self.puzzle,
+                proposal,
+                debug=self._debug,
+            )
+            self._history.append(feedback)
+            if proposal.submit:
+                self._submitted_proposal = proposal
+                return SolverRunResult(proposal.code, tuple(self._history))
 
 
 class SolverFramework:
@@ -187,20 +238,26 @@ class SolverFramework:
         failures and algorithm exceptions propagate as abnormal Solver errors.
         """
 
+        session = self.start(problem_id, algorithm_factory, debug=debug)
+        return session.run_until_submission()
+
+    def start(
+        self,
+        problem_id: str,
+        algorithm_factory: AlgorithmFactory,
+        *,
+        debug: bool = False,
+    ) -> SolverSession:
+        """Create a resumable Solver session for Manager orchestration."""
+
         puzzle = self._puzzle_repository.resolve(problem_id)
         context = SolverContext(puzzle=puzzle, rules_path=self._rules_path)
-        algorithm = algorithm_factory(context)
-        executor = Executor(puzzle.chapter, rules_path=self._rules_path)
-
-        history: list[CandidateFeedback] = []
-        feedback: CandidateFeedback | None = None
-        while True:
-            proposal = algorithm.propose(feedback)
-            self._validate_proposal(proposal, len(puzzle.inputs))
-            feedback = self._trial_candidate(executor, puzzle, proposal, debug=debug)
-            history.append(feedback)
-            if proposal.submit:
-                return SolverRunResult(proposal.code, tuple(history))
+        return SolverSession(
+            puzzle=puzzle,
+            algorithm=algorithm_factory(context),
+            executor=Executor(puzzle.chapter, rules_path=self._rules_path),
+            debug=debug,
+        )
 
     @staticmethod
     def _validate_proposal(proposal: CandidateProposal, case_count: int) -> None:
