@@ -1,0 +1,10 @@
+{
+  "problem_id": "c2_8_most",
+  "candidate": "ba=ab\nca=ac\ncb=bc\naaaa=(return)a\nbbbb=(return)b\ncccc=(return)c\n=abc",
+  "local_validation": {
+    "passed": true,
+    "case_count": 2589,
+    "line_count": 7
+  },
+  "status": "accepted"
+}

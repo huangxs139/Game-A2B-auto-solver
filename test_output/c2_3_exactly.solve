@@ -1,0 +1,10 @@
+{
+  "problem_id": "c2_3_exactly",
+  "candidate": "b=a\nc=a\naaaa=(return)false\naaa=(return)true\n=(return)false",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3279,
+    "line_count": 5
+  },
+  "status": "accepted"
+}

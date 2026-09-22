@@ -1,0 +1,10 @@
+{
+  "problem_id": "c4_5_reverse",
+  "candidate": "(once)=(start)|\n|a=(end)@a\n|b=(end)@b\n|c=(end)@c\na@=(start)a\nb@=(start)b\nc@=(start)c",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3276,
+    "line_count": 7
+  },
+  "status": "accepted"
+}

@@ -1,0 +1,10 @@
+{
+  "problem_id": "c2_5_odd",
+  "candidate": "ba=ab\nca=ac\ncb=bc\naaa=a\nbbb=b\nccc=c\naa=(return)false\nbb=(return)false\ncc=(return)false\n=(return)true",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3279,
+    "line_count": 10
+  },
+  "status": "accepted"
+}

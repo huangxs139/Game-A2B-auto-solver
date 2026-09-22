@@ -70,6 +70,13 @@ class _Instruction:
     right_string: str
 
 
+@dataclass(frozen=True)
+class _ExecutionLimits:
+    program_line_characters: int
+    line_terminator: str
+    operating_string_characters: int
+
+
 class Executor:
     """Execute A=B code for one chapter using the shared Rules definition.
 
@@ -87,6 +94,7 @@ class Executor:
         if max_steps <= 0:
             raise ValueError("max_steps must be positive")
         self._rules = self._load_rules(Path(rules_path))
+        self._limits = self._load_limits(self._rules)
         chapter_key = str(chapter)
         if chapter_key not in self._rules["chapters"]:
             raise ValueError(f"unsupported chapter: {chapter}")
@@ -126,6 +134,13 @@ class Executor:
             )
 
         current = input_text
+        if len(current) > self._limits.operating_string_characters:
+            return self._length_limit_result(
+                current,
+                steps=0,
+                observations=(),
+                context="initial input",
+            )
         consumed_once_lines: set[int] = set()
         seen_states: set[tuple[str, frozenset[int]]] = set()
         observations: list[ExecutionObservation] = []
@@ -173,6 +188,13 @@ class Executor:
                                 right_keyword=instruction.right_keyword,
                                 once_consumed=consumed_once,
                             )
+                        )
+                    if len(current) > self._limits.operating_string_characters:
+                        return self._length_limit_result(
+                            current,
+                            steps=steps,
+                            observations=tuple(observations),
+                            context=f"result of line {instruction.line_number}",
                         )
                     if should_return:
                         return ExecutionResult(
@@ -244,7 +266,7 @@ class Executor:
 
         if not isinstance(rules, dict):
             raise RulesError("Rules root must be a mapping")
-        required = {"syntax", "keywords", "chapters", "operations"}
+        required = {"syntax", "keywords", "chapters", "operations", "limits"}
         missing = required - rules.keys()
         if missing:
             raise RulesError(f"Rules missing required sections: {sorted(missing)}")
@@ -252,9 +274,71 @@ class Executor:
             raise RulesError("Rules do not define replace_leftmost_occurrence")
         return rules
 
+    @staticmethod
+    def _load_limits(rules: dict[str, Any]) -> _ExecutionLimits:
+        try:
+            program_lines = rules["limits"]["program_lines"]
+            operating_string = rules["limits"]["operating_string"]
+            program_line_characters = program_lines["maximum_characters"]
+            line_terminator = program_lines["line_terminator"]
+            operating_string_characters = operating_string["maximum_characters"]
+        except (KeyError, TypeError) as exc:
+            raise RulesError("Rules contain incomplete length limits") from exc
+
+        for name, value in (
+            ("program-line maximum_characters", program_line_characters),
+            ("operating-string maximum_characters", operating_string_characters),
+        ):
+            if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
+                raise RulesError(f"Rules {name} must be a positive integer")
+        if not isinstance(line_terminator, str) or not line_terminator:
+            raise RulesError("Rules program-line line_terminator must be non-empty")
+
+        expected_program_line_rules = {
+            "measured_on": "raw_serialized_line_before_comment_removal",
+            "line_terminator_counts": True,
+            "final_logical_line_is_treated_as_terminated": True,
+            "violation_classification": "invalid_candidate",
+            "execution_result": "invalid_program",
+        }
+        expected_operating_string_rules = {
+            "measured_in": "characters",
+            "checked_states": [
+                "initial_input",
+                "result_after_each_successful_instruction",
+                "immediate_return_result",
+            ],
+            "violation_classification": "invalid_candidate",
+            "execution_result": "invalid_program",
+        }
+        for key, expected in expected_program_line_rules.items():
+            if program_lines.get(key) != expected:
+                raise RulesError(
+                    f"unsupported Rules program_lines {key}: {program_lines.get(key)!r}"
+                )
+        for key, expected in expected_operating_string_rules.items():
+            if operating_string.get(key) != expected:
+                raise RulesError(
+                    "unsupported Rules operating_string "
+                    f"{key}: {operating_string.get(key)!r}"
+                )
+
+        return _ExecutionLimits(
+            program_line_characters=program_line_characters,
+            line_terminator=line_terminator,
+            operating_string_characters=operating_string_characters,
+        )
+
     def _parse_program(self, code_snippet: str) -> list[_Instruction]:
         instructions: list[_Instruction] = []
-        for line_number, raw_line in enumerate(code_snippet.splitlines(), start=1):
+        raw_lines = code_snippet.split(self._limits.line_terminator)
+        for line_number, raw_line in enumerate(raw_lines, start=1):
+            serialized_length = len(raw_line) + len(self._limits.line_terminator)
+            if serialized_length > self._limits.program_line_characters:
+                raise ValueError(
+                    f"line {line_number}: serialized length {serialized_length} exceeds "
+                    f"maximum {self._limits.program_line_characters}"
+                )
             effective_line = raw_line.split("#", 1)[0]
             if effective_line == "":
                 continue
@@ -278,6 +362,25 @@ class Executor:
                 )
             )
         return instructions
+
+    def _length_limit_result(
+        self,
+        current: str,
+        *,
+        steps: int,
+        observations: tuple[ExecutionObservation, ...],
+        context: str,
+    ) -> ExecutionResult:
+        return ExecutionResult(
+            output=None,
+            termination=TerminationKind.INVALID_PROGRAM,
+            steps=steps,
+            errors=(
+                f"{context}: operating-string length {len(current)} exceeds maximum "
+                f"{self._limits.operating_string_characters}",
+            ),
+            observations=observations,
+        )
 
     def _parse_side(
         self, side: str, position: str, line_number: int

@@ -1,0 +1,10 @@
+{
+  "problem_id": "c3_2_spin",
+  "candidate": "(start)b=(end)b\n(start)c=(end)c",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3025,
+    "line_count": 2
+  },
+  "status": "accepted"
+}

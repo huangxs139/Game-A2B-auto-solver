@@ -1,0 +1,10 @@
+{
+  "problem_id": "c3_7_palindrome",
+  "candidate": "a|a@=\nb|b@=\nc|c@=\n(start)a=(end)|a@\n(start)b=(end)|b@\n(start)c=(end)|c@\n@|=(return)false\n=(return)true",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3279,
+    "line_count": 8
+  },
+  "status": "accepted"
+}

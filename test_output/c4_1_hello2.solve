@@ -1,0 +1,10 @@
+{
+  "problem_id": "c4_1_hello2",
+  "candidate": "(once)=(start)hello",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3279,
+    "line_count": 1
+  },
+  "status": "accepted"
+}

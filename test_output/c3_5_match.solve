@@ -1,0 +1,10 @@
+{
+  "problem_id": "c3_5_match",
+  "candidate": "(end)a|=(return)true\n(end)b@=(return)true\n(end)c$=(return)true\n(start)a=(end)|\n(start)b=(end)@\n(start)c=(end)$\n=(return)false",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3276,
+    "line_count": 7
+  },
+  "status": "accepted"
+}

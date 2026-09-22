@@ -1,0 +1,10 @@
+{
+  "problem_id": "c4_11_clone2",
+  "candidate": "(once)=(end)|\n@a=(end)a\n@b=(end)b\n@c=(end)c\na|=|@|aa\nb|=|@|bb\nc|=|@|cc\n|=",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3279,
+    "line_count": 8
+  },
+  "status": "accepted"
+}

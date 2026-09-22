@@ -1,0 +1,10 @@
+{
+  "problem_id": "c1_2_uppercase",
+  "candidate": "a=A\nb=B\nc=C",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3279,
+    "line_count": 3
+  },
+  "status": "accepted"
+}

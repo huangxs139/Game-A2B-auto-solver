@@ -1,0 +1,10 @@
+{
+  "problem_id": "c4_14_center2",
+  "candidate": "(once)=@|$||\n||a=(end)|@aa\n||b=(end)|@bb\n||c=(end)|@cc\n$|=(start)|\n$=$||$||\n|@a=\n|@b=\n|@c=",
+  "local_validation": {
+    "passed": true,
+    "case_count": 2460,
+    "line_count": 9
+  },
+  "status": "accepted"
+}

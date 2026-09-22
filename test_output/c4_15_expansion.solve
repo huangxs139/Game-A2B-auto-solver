@@ -1,0 +1,10 @@
+{
+  "problem_id": "c4_15_expansion",
+  "candidate": "(once)=||@||@\n||@a=(end)|@|a|@|\n||@b=(end)|@|b|@|\n||@c=(end)|@|c|@|\na|@||@|b|@||@|c=(start)|||@|@\n@||@|a=|@||@||@abcaa\n@||@|b=|@||@||@abcbb\n@||@|c=|@||@||@abccc\n|@|=",
+  "local_validation": {
+    "passed": true,
+    "case_count": 1092,
+    "line_count": 9
+  },
+  "status": "accepted"
+}

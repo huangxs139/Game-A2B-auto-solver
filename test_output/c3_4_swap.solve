@@ -1,0 +1,10 @@
+{
+  "problem_id": "c3_4_swap",
+  "candidate": "(end)b=(start)|b\n|ba=(end)|ab\n|=",
+  "local_validation": {
+    "passed": true,
+    "case_count": 1093,
+    "line_count": 3
+  },
+  "status": "accepted"
+}

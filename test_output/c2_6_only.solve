@@ -1,0 +1,10 @@
+{
+  "problem_id": "c2_6_only",
+  "candidate": "aaa=aa\naa=|\na=@\nbbb=bb\nbb=|\nb=@\nccc=cc\ncc=|\nc=@\n|=\n@@=(return)false\n@=(return)true\n=(return)false",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3279,
+    "line_count": 13
+  },
+  "status": "accepted"
+}

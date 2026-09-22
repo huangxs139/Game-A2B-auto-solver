@@ -2,9 +2,13 @@
 
 from io import StringIO
 import json
+from pathlib import Path
+from tempfile import TemporaryDirectory
 import unittest
 
-from src.executor import Executor, TerminationKind
+import yaml
+
+from src.executor import DEFAULT_RULES_PATH, Executor, TerminationKind
 
 
 class ExecutorTests(unittest.TestCase):
@@ -89,6 +93,55 @@ class ExecutorTests(unittest.TestCase):
 
         self.assertEqual(TerminationKind.INVALID_PROGRAM, result.termination)
         self.assertFalse(result.errors[0].startswith("Executor"))
+
+    def test_program_line_limit_counts_comments_and_implicit_final_newline(
+        self,
+    ) -> None:
+        accepted_code = "a=b#" + "x" * 250
+        rejected_code = accepted_code + "x"
+
+        accepted = Executor(1).execute("a", accepted_code)
+        rejected = Executor(1).execute("a", rejected_code)
+
+        self.assertEqual(254, len(accepted_code))
+        self.assertEqual(TerminationKind.NORMAL, accepted.termination)
+        self.assertEqual("b", accepted.output)
+        self.assertEqual(TerminationKind.INVALID_PROGRAM, rejected.termination)
+        self.assertIn("serialized length 256", rejected.errors[0])
+
+    def test_operating_string_limit_checks_initial_and_generated_states(self) -> None:
+        executor = Executor(1)
+
+        maximum = executor.execute("a" * 255, "z=y")
+        oversized_input = executor.execute("a" * 256, "z=y")
+        oversized_result = executor.execute("a" * 255, "a=aa", debug=True)
+
+        self.assertEqual(TerminationKind.NORMAL, maximum.termination)
+        self.assertEqual(TerminationKind.INVALID_PROGRAM, oversized_input.termination)
+        self.assertEqual(0, oversized_input.steps)
+        self.assertIn("initial input", oversized_input.errors[0])
+        self.assertEqual(TerminationKind.INVALID_PROGRAM, oversized_result.termination)
+        self.assertEqual(1, oversized_result.steps)
+        self.assertIn("result of line 1", oversized_result.errors[0])
+        self.assertEqual(1, len(oversized_result.observations))
+
+    def test_length_limit_values_are_loaded_from_rules(self) -> None:
+        rules = yaml.safe_load(DEFAULT_RULES_PATH.read_text(encoding="utf-8"))
+        rules["limits"]["program_lines"]["maximum_characters"] = 5
+        rules["limits"]["operating_string"]["maximum_characters"] = 3
+
+        with TemporaryDirectory() as directory:
+            rules_path = Path(directory) / "rules.yaml"
+            rules_path.write_text(yaml.safe_dump(rules), encoding="utf-8")
+            executor = Executor(1, rules_path=rules_path)
+
+            accepted = executor.execute("aaa", "a=b#")
+            long_line = executor.execute("a", "a=b#x")
+            long_state = executor.execute("aaaa", "a=b")
+
+        self.assertEqual(TerminationKind.NORMAL, accepted.termination)
+        self.assertEqual(TerminationKind.INVALID_PROGRAM, long_line.termination)
+        self.assertEqual(TerminationKind.INVALID_PROGRAM, long_state.termination)
 
     def test_repeated_state_is_detected_as_nontermination(self) -> None:
         result = Executor(1).execute("a", "a=a")

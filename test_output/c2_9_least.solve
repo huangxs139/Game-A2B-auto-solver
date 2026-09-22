@@ -1,0 +1,10 @@
+{
+  "problem_id": "c2_9_least",
+  "candidate": "ba=ab\nca=ac\ncb=bc\nabc=(return)b\naab=(return)c\nbc=(return)a\n=ab",
+  "local_validation": {
+    "passed": true,
+    "case_count": 2220,
+    "line_count": 7
+  },
+  "status": "accepted"
+}

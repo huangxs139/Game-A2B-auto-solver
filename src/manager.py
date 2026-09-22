@@ -369,6 +369,27 @@ def validate_candidate(
     )
 
 
+def _duplicate_replacement_result(
+    puzzle: Puzzle, candidate: str
+) -> ValidationResult:
+    proposal = CandidateProposal(candidate, submit=True)
+    return ValidationResult(
+        problem_id=puzzle.problem_id,
+        outcome=ValidationOutcome.FAIL,
+        candidate=candidate,
+        line_count=len(candidate.splitlines()),
+        case_count=len(puzzle.inputs),
+        elapsed_seconds=0.0,
+        feedback=CandidateFeedback(
+            proposal=proposal,
+            trials=(),
+            failure_reasons=(
+                "candidate is identical to the current candidate marked re-solve",
+            ),
+        ),
+    )
+
+
 def _solver_worker(
     connection: object,
     puzzle_directory: str,
@@ -617,6 +638,33 @@ class Manager:
                                     "events with "
                                     f"{len(message.candidate.splitlines())} lines."
                                 )
+                            initial_state = initial_states[message.problem_id]
+                            if (
+                                persist
+                                and initial_state is not None
+                                and initial_state.status == "re-solve"
+                                and message.candidate == initial_state.candidate
+                            ):
+                                result = _duplicate_replacement_result(
+                                    puzzle_by_id[message.problem_id],
+                                    message.candidate,
+                                )
+                                validation_failures += 1
+                                self._write(
+                                    f"Validation FAIL for {message.problem_id}; "
+                                    "candidate matches the existing re-solve "
+                                    "candidate."
+                                )
+                                self._record_validation(
+                                    result,
+                                    "validation_fail",
+                                    message.search_feedback_count,
+                                )
+                                assert result.feedback is not None
+                                runtime.connection.send(
+                                    _ValidationFailed(result.feedback)
+                                )
+                                continue
                             validations[chapter] = self._start_validation(
                                 puzzle_by_id[message.problem_id],
                                 message.candidate,

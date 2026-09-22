@@ -1,0 +1,10 @@
+{
+  "problem_id": "c4_9_atob3",
+  "candidate": "(once)=(start)|\n|a=b|\n|b=a|\n|c=c|\n|=",
+  "local_validation": {
+    "passed": true,
+    "case_count": 3279,
+    "line_count": 5
+  },
+  "status": "accepted"
+}
