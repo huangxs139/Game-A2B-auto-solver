@@ -10,7 +10,7 @@ The repository is the authoritative project source of truth.
 
 ## 2. Authoritative Project Documents
 
-All authoritative project documents used for development are placed in repository under directory `docs/`.
+All principal authoritative project documents used for development are placed in repository under directory `docs/`. The protected machine-readable Rules are normative project content and remain under `src/rules/`.
 
 Before substantive development, Codex must read the project documents relevant to the assigned work:
 

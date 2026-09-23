@@ -410,7 +410,7 @@ If persistent learned state is later required, it belongs to Solver and must fol
 
 ---
 
-## 16. Existing Simulator Migration
+## 16. Historical Simulator Migration
 
 Historical simulator code may be reused as behavioral and implementation reference.
 

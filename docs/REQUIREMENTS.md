@@ -103,7 +103,7 @@ Correct A=B solutions are expected to terminate.
 
 Executor must enforce both program-line and operating-string length limits from Rules.
 
-Historical chapter-specific simulators may be inspected, tested, refactored, replaced, or redesigned.
+Historical simulator implementations were used as migration references during development but are no longer part of the repository or live runtime.
 
 Their architecture and APIs are not compatibility requirements; behavioral correctness is.
 
