@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from io import StringIO
 import json
 import multiprocessing as mp
 import os
@@ -77,6 +78,7 @@ class ValidationResult:
     elapsed_seconds: float
     feedback: CandidateFeedback | None = None
     error: str | None = None
+    debug_trials: tuple[TrialResult, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -127,6 +129,7 @@ class _CandidateSubmitted:
     problem_id: str
     candidate: str
     search_feedback_count: int
+    search_feedback_history: tuple[CandidateFeedback, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -290,6 +293,7 @@ def validate_candidate(
     candidate: str,
     *,
     rules_path: Path | str = DEFAULT_RULES_PATH,
+    debug: bool = False,
 ) -> ValidationResult:
     """Perform Manager-owned authoritative validation through Executor."""
 
@@ -305,10 +309,20 @@ def validate_candidate(
     try:
         executor = Executor(puzzle.chapter, rules_path=rules_path)
         failed_trials: list[TrialResult] = []
+        debug_trials: list[TrialResult] = []
         for index, (input_text, expected_output) in enumerate(
             zip(puzzle.inputs, puzzle.expected_outputs)
         ):
-            execution = executor.execute(input_text, candidate)
+            execution = executor.execute(input_text, candidate, debug=debug)
+            trial = TrialResult(
+                case_index=index,
+                input_text=input_text,
+                expected_output=expected_output,
+                execution=execution,
+                matches_expected_output=execution.output == expected_output,
+            )
+            if debug:
+                debug_trials.append(trial)
             if execution.termination is TerminationKind.EXECUTOR_ERROR:
                 return ValidationResult(
                     problem_id=puzzle.problem_id,
@@ -321,18 +335,10 @@ def validate_candidate(
                         f"Executor failed on case {index}: "
                         f"{'; '.join(execution.errors)}"
                     ),
+                    debug_trials=tuple(debug_trials),
                 )
-            matches = execution.output == expected_output
-            if not matches or not execution.terminated_normally:
-                failed_trials.append(
-                    TrialResult(
-                        case_index=index,
-                        input_text=input_text,
-                        expected_output=expected_output,
-                        execution=execution,
-                        matches_expected_output=matches,
-                    )
-                )
+            if not trial.matches_expected_output or not execution.terminated_normally:
+                failed_trials.append(trial)
     except Exception as exc:
         return ValidationResult(
             problem_id=puzzle.problem_id,
@@ -358,6 +364,7 @@ def validate_candidate(
             case_count=len(puzzle.inputs),
             elapsed_seconds=time.monotonic() - started,
             feedback=feedback,
+            debug_trials=tuple(debug_trials),
         )
     return ValidationResult(
         problem_id=puzzle.problem_id,
@@ -366,6 +373,7 @@ def validate_candidate(
         line_count=line_count,
         case_count=len(puzzle.inputs),
         elapsed_seconds=time.monotonic() - started,
+        debug_trials=tuple(debug_trials),
     )
 
 
@@ -434,6 +442,7 @@ def _solver_worker(
                     problem_id=current_problem_id,
                     candidate=result.submitted_code,
                     search_feedback_count=len(result.feedback_history),
+                    search_feedback_history=(result.feedback_history if debug else ()),
                 )
             )
     except BaseException as exc:
@@ -453,10 +462,11 @@ def _validation_worker(
     puzzle: Puzzle,
     candidate: str,
     rules_path: str,
+    debug: bool,
 ) -> None:
     try:
         connection.send(
-            validate_candidate(puzzle, candidate, rules_path=rules_path)
+            validate_candidate(puzzle, candidate, rules_path=rules_path, debug=debug)
         )
     except BaseException as exc:
         connection.send(
@@ -638,6 +648,7 @@ class Manager:
                                     "events with "
                                     f"{len(message.candidate.splitlines())} lines."
                                 )
+                                self._record_search(message)
                             initial_state = initial_states[message.problem_id]
                             if (
                                 persist
@@ -669,6 +680,7 @@ class Manager:
                                 puzzle_by_id[message.problem_id],
                                 message.candidate,
                                 message.search_feedback_count,
+                                debug=debug,
                             )
                         elif isinstance(message, _SolverFailure):
                             if message.problem_id is not None:
@@ -858,11 +870,13 @@ class Manager:
         puzzle: Puzzle,
         candidate: str,
         search_feedback_count: int,
+        *,
+        debug: bool,
     ) -> _ValidationRuntime:
         manager_connection, worker_connection = self._mp.Pipe(duplex=False)
         process = self._mp.Process(
             target=_validation_worker,
-            args=(worker_connection, puzzle, candidate, str(self.rules_path)),
+            args=(worker_connection, puzzle, candidate, str(self.rules_path), debug),
             name=f"a2b-validation-{puzzle.problem_id}",
         )
         process.start()
@@ -919,14 +933,7 @@ class Manager:
         if result.feedback is not None:
             failure_reasons = result.feedback.failure_reasons
             failed_cases = [
-                {
-                    "case_index": trial.case_index,
-                    "input": trial.input_text,
-                    "expected": trial.expected_output,
-                    "actual": trial.execution.output,
-                    "termination": trial.execution.termination.value,
-                    "errors": trial.execution.errors,
-                }
+                self._trial_summary(trial)
                 for trial in result.feedback.trials
             ]
         self.reporter.write(
@@ -941,9 +948,57 @@ class Manager:
                 "elapsed_seconds": result.elapsed_seconds,
                 "failure_reasons": failure_reasons,
                 "failed_cases": failed_cases,
+                "debug_trials": [
+                    self._trial_diagnostics(trial) for trial in result.debug_trials
+                ],
                 "error": result.error,
             },
         )
+
+    def _record_search(self, message: _CandidateSubmitted) -> None:
+        """Persist Solver-side Executor observations received over worker IPC."""
+
+        self.reporter.write(
+            message.problem_id,
+            "search_diagnostics",
+            {
+                "feedback_events": [
+                    {
+                        "candidate": feedback.proposal.code,
+                        "case_indices": feedback.proposal.case_indices,
+                        "submitted": feedback.proposal.submit,
+                        "failure_reasons": feedback.failure_reasons,
+                        "trials": [
+                            self._trial_diagnostics(trial) for trial in feedback.trials
+                        ],
+                    }
+                    for feedback in message.search_feedback_history
+                ],
+            },
+        )
+
+    @staticmethod
+    def _trial_diagnostics(trial: TrialResult) -> dict[str, object]:
+        """Serialize a trial, using Executor's canonical observation dumper."""
+
+        observation_stream = StringIO()
+        Executor.dump_observations(trial.execution, observation_stream)
+        return Manager._trial_summary(trial) | {
+            "observations": json.loads(observation_stream.getvalue()),
+        }
+
+    @staticmethod
+    def _trial_summary(trial: TrialResult) -> dict[str, object]:
+        """Serialize the standard non-Debug portion of a trial result."""
+
+        return {
+            "case_index": trial.case_index,
+            "input": trial.input_text,
+            "expected": trial.expected_output,
+            "actual": trial.execution.output,
+            "termination": trial.execution.termination.value,
+            "errors": trial.execution.errors,
+        }
 
     def _write(self, message: str) -> None:
         print(message, file=self.output, flush=True)

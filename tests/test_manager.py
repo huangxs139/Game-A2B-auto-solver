@@ -211,7 +211,7 @@ class ManagerWorkflowTests(unittest.TestCase):
         assert state is not None
         self.assertEqual("a=b", state.candidate)
         reports = tuple(self.report_directory.glob("c1_1_retry_*.report.json"))
-        self.assertEqual(2, len(reports))
+        self.assertEqual(4, len(reports))
 
     def test_re_solve_rejects_identical_candidate_and_persists_replacement(
         self,
@@ -233,7 +233,7 @@ class ManagerWorkflowTests(unittest.TestCase):
         self.assertEqual("pending", state.status)
         self.assertIsNone(state.reason)
         reports = tuple(self.report_directory.glob("c1_1_resolve_*.report.json"))
-        self.assertEqual(2, len(reports))
+        self.assertEqual(4, len(reports))
 
     def test_runs_different_chapters_concurrently(self) -> None:
         self._write_puzzle("c1_1_first", 1)
@@ -292,9 +292,29 @@ class ManagerWorkflowTests(unittest.TestCase):
         self.assertEqual(1, summary.solved)
         self.assertEqual(before, state_path.read_text(encoding="utf-8"))
         self.assertEqual(
-            1,
+            2,
             len(tuple(self.report_directory.glob("c1_1_target_*.report.json"))),
         )
+
+    def test_debug_reports_include_executor_observations_from_search_and_validation(
+        self,
+    ) -> None:
+        self._write_puzzle("c1_1_diagnostics", 1)
+
+        summary = self._manager(_make_immediate_algorithm).solve_target(
+            "c1_1_diagnostics"
+        )
+
+        self.assertEqual(0, summary.exit_code)
+        reports = [
+            json.loads(path.read_text(encoding="utf-8"))
+            for path in self.report_directory.glob("c1_1_diagnostics_*.report.json")
+        ]
+        by_event = {report["event"]: report["details"] for report in reports}
+        search_trial = by_event["search_diagnostics"]["feedback_events"][0]["trials"][0]
+        validation_trial = by_event["validation_pass"]["debug_trials"][0]
+        self.assertEqual("a", search_trial["observations"][0]["before"])
+        self.assertEqual("b", validation_trial["observations"][0]["after"])
 
     def test_corrupted_owner_state_is_rejected(self) -> None:
         self._write_puzzle("c1_1_badstate", 1)
@@ -364,7 +384,7 @@ class ManagerWorkflowTests(unittest.TestCase):
         self.assertEqual(1, summary.solved)
         self.assertFalse(self.output_directory.exists())
         self.assertEqual(
-            1,
+            2,
             len(tuple(self.report_directory.glob(f"{problem_id}_*.report.json"))),
         )
 
