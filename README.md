@@ -22,7 +22,7 @@ Fair. That's why this project exists in the first place.
 
 The accepted programs are stored under [`test_output/`](test_output/), although reading solutions out of JSON files is not exactly anyone's idea of fun. Run this instead:
 
-``````bash
+```bash
 python tools/review_candidates.py
 ```
 
@@ -71,6 +71,8 @@ The Solver is deliberately built for the closed set of 47 puzzles in the game's 
 
 The project was developed and tested as a Linux command-line application on Python 3.14. Windows users can obtain the same kind of environment through WSL2 or a Linux virtual machine.
 
+The committed `.solve` files record the upstream project owner's accepted results, so Manager correctly skips them. For your own clean solving run, those decisions are reference artifacts rather than decisions you need to preserve: remove the files so every puzzle starts unsolved. The new `.solve` files generated afterward become your local candidates and await your own review.
+
 Run the following from your local checkout:
 
 ```bash
@@ -81,9 +83,8 @@ rm -- test_output/*.solve                   # Remove existing accepted candidate
 # To solve the complete six-chapter, 47-puzzle set automatically.
 python a2bautosolver.py solve all
 
-# To solve single specific puzzle (almost used in --debug mode)
-# Parameter followed 'solve' should match the puzzle's full name,
-#   lookup it from test_data/ with pattern c{chapter_id}_{puzzle_id}_{puzzle_name}.
+# To solve one puzzle in targeted Debug mode, pass its full identifier after 'solve'.
+# Find identifiers in test_data/; they follow c{chapter_id}_{puzzle_id}_{puzzle_name}.
 python a2bautosolver.py solve c1_1_atob     # Force-run puzzle c1_1_atob in non-persistent targeted mode.
 ```
 
@@ -120,7 +121,7 @@ The same requirements, architecture, roadmap, feature specifications, project in
 - 47 committed solution states
 - 47 owner-accepted solutions after real-game validation
 - 126,626 supplied input/output cases passed in the final full local revalidation
-- 47 automated tests passing at the documentation baseline
+- 48 automated tests passing at the documentation baseline
 
 Puzzle inputs live in [`test_data/`](test_data/). The corresponding accepted A=B programs and their validation metadata live in [`test_output/`](test_output/).
 
@@ -146,4 +147,7 @@ This is an independent experimental project. A=B and its original game materials
 
 ## License
 
-[MIT](LICENSE)
+The original source code and documentation created for this project are
+available under the [MIT License](LICENSE). That license does not grant rights
+to A=B or to game-derived material owned by Artless Games or another applicable
+rights holder.
