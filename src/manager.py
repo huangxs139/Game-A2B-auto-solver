@@ -271,12 +271,20 @@ class DiagnosticReporter:
 
     def __init__(self, directory: Path | str = DEFAULT_REPORT_DIRECTORY) -> None:
         self.directory = Path(directory)
+        self._run_id: str | None = None
+
+    def start_run(self) -> str:
+        """Create the identifier shared by reports from one Manager run."""
+
+        self._run_id = uuid4().hex
+        return self._run_id
 
     def write(self, problem_id: str, event: str, details: dict[str, object]) -> Path:
         self.directory.mkdir(parents=True, exist_ok=True)
         marker = f"{time.time_ns()}_{uuid4().hex[:8]}"
         path = self.directory / f"{problem_id}_{marker}.report.json"
         payload = {
+            "run_id": self._run_id,
             "problem_id": problem_id,
             "event": event,
             "recorded_at": datetime.now(UTC).isoformat(),
@@ -593,6 +601,7 @@ class Manager:
         persist: bool,
         debug: bool,
     ) -> RunSummary:
+        self.reporter.start_run()
         grouped: dict[int, list[str]] = {}
         puzzle_by_id = {puzzle.problem_id: puzzle for puzzle in all_puzzles}
         for puzzle in selected_puzzles:
@@ -1051,7 +1060,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
     solve.add_argument(
         "--debug",
         action="store_true",
-        help="persist richer validation diagnostics",
+        help="persist detailed search and validation diagnostics",
     )
     return parser
 

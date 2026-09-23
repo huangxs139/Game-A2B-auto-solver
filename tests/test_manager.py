@@ -310,6 +310,7 @@ class ManagerWorkflowTests(unittest.TestCase):
             json.loads(path.read_text(encoding="utf-8"))
             for path in self.report_directory.glob("c1_1_diagnostics_*.report.json")
         ]
+        self.assertEqual(1, len({report["run_id"] for report in reports}))
         by_event = {report["event"]: report["details"] for report in reports}
         search_trial = by_event["search_diagnostics"]["feedback_events"][0]["trials"][0]
         validation_trial = by_event["validation_pass"]["debug_trials"][0]
