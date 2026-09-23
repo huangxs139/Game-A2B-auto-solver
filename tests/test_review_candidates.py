@@ -108,7 +108,7 @@ class CandidateReviewTUITests(unittest.TestCase):
         self,
     ) -> None:
         path = self._write_state("c4_6_demo")
-        answers = iter(("4_6", "1"))
+        answers = iter(("4_6", "1", "q"))
         output = StringIO()
         tui = CandidateReviewTUI(
             self.state_directory,
@@ -116,16 +116,17 @@ class CandidateReviewTUITests(unittest.TestCase):
             output=output,
         )
 
-        self.assertTrue(tui.review_candidates())
+        self.assertFalse(tui.review_candidates())
 
         saved = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual("accepted", saved["status"])
         self.assertIn("Saved c4_6_demo as accepted.", output.getvalue())
 
-    def test_review_continues_with_next_pending_candidate_as_default(self) -> None:
-        first = self._write_state("c1_1_first")
-        second = self._write_state("c1_2_second")
-        answers = iter(("", "1", "", "3", "needs another solution"))
+    def test_review_uses_accepted_default_and_enter_keeps_current_status(
+        self,
+    ) -> None:
+        path = self._write_state("c2_4_done", "accepted")
+        answers = iter(("", "", "q"))
         prompts: list[str] = []
         output = StringIO()
 
@@ -139,7 +140,37 @@ class CandidateReviewTUITests(unittest.TestCase):
             output=output,
         )
 
-        self.assertTrue(tui.review_candidates())
+        self.assertFalse(tui.review_candidates())
+
+        saved = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual("accepted", saved["status"])
+        self.assertTrue(
+            any("Puzzle coordinate [2-4]" in prompt for prompt in prompts)
+        )
+        self.assertIn("Test result [keep]: ", prompts)
+        self.assertIn("[Enter] Keep current status", output.getvalue())
+        self.assertIn("No change made.", output.getvalue())
+
+    def test_review_continues_with_next_pending_candidate_as_default(self) -> None:
+        first = self._write_state("c1_1_first")
+        second = self._write_state("c1_2_second")
+        answers = iter(
+            ("", "1", "", "3", "needs another solution", "q")
+        )
+        prompts: list[str] = []
+        output = StringIO()
+
+        def answer(prompt: str) -> str:
+            prompts.append(prompt)
+            return next(answers)
+
+        tui = CandidateReviewTUI(
+            self.state_directory,
+            input_function=answer,
+            output=output,
+        )
+
+        self.assertFalse(tui.review_candidates())
 
         first_state = json.loads(first.read_text(encoding="utf-8"))
         second_state = json.loads(second.read_text(encoding="utf-8"))
@@ -150,20 +181,32 @@ class CandidateReviewTUITests(unittest.TestCase):
         self.assertTrue(any("Puzzle coordinate [1-2]" in prompt for prompt in prompts))
         self.assertGreaterEqual(output.getvalue().count("\033[2J\033[H"), 3)
 
-    def test_main_menu_offers_review_summary_and_quit(self) -> None:
-        answers = iter(("s", "q"))
+    def test_run_starts_in_review_flow_with_status_summary(self) -> None:
+        self._write_state("c1_1_demo", "accepted")
+        answers = iter(("q",))
+        prompts: list[str] = []
         output = StringIO()
+
+        def answer(prompt: str) -> str:
+            prompts.append(prompt)
+            return next(answers)
+
         tui = CandidateReviewTUI(
             self.state_directory,
-            input_function=lambda prompt: next(answers),
+            input_function=answer,
             output=output,
         )
 
         exit_code = tui.run()
 
         self.assertEqual(0, exit_code)
-        self.assertIn("Review candidate", output.getvalue())
-        self.assertIn("Status summary", output.getvalue())
+        text = output.getvalue()
+        self.assertTrue(text.startswith("\033[2J\033[HA2B Candidate Review"))
+        self.assertIn("Status summary", text)
+        self.assertNotIn("[s] Status summary", text)
+        self.assertEqual(1, len(prompts))
+        self.assertIn("Puzzle coordinate [1-1]", prompts[0])
+        self.assertIn("Review tool closed.", text)
 
 
 if __name__ == "__main__":

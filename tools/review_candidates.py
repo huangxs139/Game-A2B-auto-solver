@@ -40,7 +40,6 @@ class CandidateReviewError(RuntimeError):
 
 
 class _Navigation(Enum):
-    BACK = "back"
     QUIT = "quit"
 
 
@@ -131,44 +130,35 @@ class CandidateReviewTUI:
         self._output = output or sys.stdout
 
     def run(self) -> int:
-        self._write("A2B Candidate Review")
-        while True:
-            self._write("\n[r] Review candidate  [s] Status summary  [q] Quit")
-            try:
-                choice = self._input("Choice: ").strip().lower()
-            except (EOFError, KeyboardInterrupt):
-                self._write("\nReview tool closed.")
-                return 0
-            if choice in {"q", "quit"}:
-                self._write("Review tool closed.")
-                return 0
-            if choice in {"r", "review"}:
-                if not self.review_candidates():
-                    self._write("Review tool closed.")
-                    return 0
-            elif choice in {"s", "summary"}:
-                self.show_summary()
-            else:
-                self._write("Unknown choice. Enter r, s, or q.")
+        try:
+            self.review_candidates()
+        except (EOFError, KeyboardInterrupt):
+            self._write("\nReview tool closed.")
+            return 0
+        self._write("Review tool closed.")
+        return 0
 
     def review_candidates(self) -> bool:
         notice: str | None = None
         while True:
             self._clear_screen()
+            self._write("A2B Candidate Review")
             if notice is not None:
                 self._write(notice)
                 self._write("")
                 notice = None
             grouped = self.show_summary()
+            default_candidates = grouped["pending"] or grouped["accepted"]
             default_problem_id = (
-                grouped["pending"][0] if grouped["pending"] else None
+                default_candidates[0] if default_candidates else None
             )
             if default_problem_id is None:
-                self._write("\nNo pending candidates remain. Returning to main menu.")
+                self._write(
+                    "\nNo pending or accepted candidates remain. "
+                    "Closing review."
+                )
                 return True
             coordinate = self._read_coordinate(default_problem_id)
-            if coordinate is _Navigation.BACK:
-                return True
             if coordinate is _Navigation.QUIT:
                 return False
             notice = self._review_candidate(coordinate)
@@ -190,8 +180,11 @@ class CandidateReviewTUI:
         self._write("\n--- candidate (copy text below) ---")
         self._write(candidate)
         self._write("--- end candidate ---")
-        self._write("\n[1] Accepted  [2] Rejected  [3] Re-solve  [s] Skip")
-        decision = self._input("Test result: ").strip().lower()
+        self._write(
+            "\n[1] Accepted  [2] Rejected  [3] Re-solve  "
+            "[Enter] Keep current status"
+        )
+        decision = self._input("Test result [keep]: ").strip().lower()
         if decision in {"s", "skip", "b", "back", ""}:
             return "No change made."
         if decision in {"q", "quit"}:
@@ -287,12 +280,10 @@ class CandidateReviewTUI:
         while True:
             value = self._input(
                 f"Puzzle coordinate [{default_text}] "
-                "(Enter=default, b=menu, q=quit): "
+                "(Enter=default, q=quit): "
             ).strip().lower()
             if not value:
                 return default_coordinate
-            if value in {"b", "back"}:
-                return _Navigation.BACK
             if value in {"q", "quit"}:
                 return _Navigation.QUIT
             match = _COORDINATE_PATTERN.fullmatch(value)
