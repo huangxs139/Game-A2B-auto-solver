@@ -17,8 +17,7 @@ Cross-platform support is not required.
 The problem set is closed and authoritative:
 
 * exactly 6 known chapters;
-* approximately 10 puzzles per chapter;
-* approximately 60 puzzles total.
+* 47 puzzles total.
 
 Support for future chapters, unknown instructions, newly added puzzles, external problem sets, or hypothetical future game changes is not required.
 
