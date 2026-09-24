@@ -22,13 +22,7 @@ Thanks, Codex. This is your problem now.
 
 Fair. That's why this project exists in the first place.
 
-The accepted programs are stored under [`test_output/`](test_output/), although reading solutions out of JSON files is not exactly anyone's idea of fun. Run this instead:
-
-```bash
-python tools/review_candidates.py
-```
-
-It gives you an interactive, readable view of every puzzle and its copy-friendly A=B program. No manual JSON excavation required.
+Open [`user_docs/ANSWERS.txt`](user_docs/ANSWERS.txt). It collects all 47 accepted A=B code answers. (Notice 5-5 might take ~15 mins to run. Go grab a coffee and **DON'T POKE IT!**)
 
 ### “I want to make the Solver suffer through a puzzle myself.”
 
@@ -125,7 +119,7 @@ The same requirements, architecture, roadmap, feature specifications, project in
 - 126,626 supplied input/output cases passed in the final full local revalidation
 - 48 automated tests passing at the documentation baseline
 
-Puzzle inputs live in [`test_data/`](test_data/). The corresponding accepted A=B programs and their validation metadata live in [`test_output/`](test_output/).
+Puzzle inputs live in [`test_data/`](test_data/). Copy-friendly accepted programs live in [`user_docs/ANSWERS.txt`](user_docs/ANSWERS.txt); their persisted Solver state and validation metadata remain in [`test_output/`](test_output/).
 
 Local validation and real-game acceptance are intentionally separate: the program can prove that a candidate matches every supplied case, but only the project owner can confirm that it is accepted by the original game.
 

@@ -20,15 +20,9 @@
 
 ### “我只想看答案”
 
-没问题，这本来就是本项目的最大价值。
+没问题，懒是优点，不懒不会有本项目。
 
-已接受的程序保存在 [`test_output/`](test_output/) 中，但从 JSON 文件里翻答案显然不够方便。请运行：
-
-```bash
-python tools/review_candidates.py
-```
-
-它会以交互、易读的方式展示每道谜题及其便于复制的 A=B 程序，无需手工挖掘 JSON。
+请直接查看 [`user_docs/ANSWERS.zh-CN.txt`](user_docs/ANSWERS.zh-CN.txt)。你可以轻松找到每一题的答案，均已验证过。（留心5-5可能需要跑15分钟，喝杯咖啡吧，别打断它）
 
 ### “我想亲自让 Solver 受一遍折磨”
 
@@ -125,7 +119,7 @@ Solver 使用不断扩展的变换识别器和 A=B 程序模板工具箱。早�
 - 最终完整本地复验通过 126,626 个给定输入/输出用例
 - 文档基线下 48 项自动化测试通过
 
-谜题输入位于 [`test_data/`](test_data/)，对应的已接受 A=B 程序及验证元数据位于 [`test_output/`](test_output/)。
+谜题输入位于 [`test_data/`](test_data/)。便于复制的已接受程序位于 [`user_docs/ANSWERS.zh-CH.txt`](user_docs/ANSWERS.zh-CH.txt)；对应的 Solver 持久化状态和验证元数据仍位于 [`test_output/`](test_output/)。
 
 本地验证和真实游戏接受有意保持分离：程序能够证明候选符合全部给定用例，但只有人可以确认解能否成功通过原版游戏。
 
