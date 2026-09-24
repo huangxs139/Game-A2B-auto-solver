@@ -1,5 +1,7 @@
 # A2B Auto Solver Codebase Guide
 
+[English](CODEBASE_GUIDE.md) | [简体中文](CODEBASE_GUIDE.zh-CN.md)
+
 This guide is a navigation map for the current implementation. It is intended
 for a Python developer who wants to trace a run, diagnose a failure, or change
 the implementation without crossing the project's ownership boundaries.

@@ -1,5 +1,7 @@
 # Getting Started
 
+[English](GETTING_STARTED.md) | [简体中文](GETTING_STARTED.zh-CN.md)
+
 This guide starts where the README leaves off: with a local checkout and a desire to run the tools. All commands below assume that your shell is in the repository root, the directory containing `a2bautosolver.py`.
 
 ## 1. Prepare the environment

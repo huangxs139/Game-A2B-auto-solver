@@ -1,5 +1,7 @@
 # A=B Auto Solver
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 This repository is an automatic solver for the [**A=B**](#acknowledgements) game's complete six-chapter, 47-puzzle set. It generates real A=B programs for every puzzle, and all 47 included solutions have passed both exhaustive local validation and the original game.
 
 ## Why does this exist?

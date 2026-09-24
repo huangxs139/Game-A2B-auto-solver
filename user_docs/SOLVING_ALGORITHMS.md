@@ -1,5 +1,7 @@
 # A2B Auto Solver: Implemented Solving Algorithms
 
+[English](SOLVING_ALGORITHMS.md) | [简体中文](SOLVING_ALGORITHMS.zh-CN.md)
+
 This document explains the algorithms that actually synthesize A=B programs
 in `src/solver.py`. Its subject is the search itself: how the Solver recognizes
 a possible transformation from puzzle data, how it turns that hypothesis into
