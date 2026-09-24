@@ -1,6 +1,6 @@
 # 入门指南
 
-[English](GETTING_STARTED.md) | [简体中文](GETTING_STARTED.zh-CN.md)
+[English](Getting-Started.md) | 简体中文
 
 本指南从 README 结束的位置开始：你已有本地检出目录，并希望运行工具。以下命令均假定 Shell 位于包含 `a2bautosolver.py` 的仓库根目录。
 

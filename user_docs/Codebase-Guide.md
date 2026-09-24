@@ -1,6 +1,6 @@
 # A2B Auto Solver Codebase Guide
 
-[English](CODEBASE_GUIDE.md) | [简体中文](CODEBASE_GUIDE.zh-CN.md)
+English | [简体中文](Codebase-Guide-zh-CN.md)
 
 This guide is a navigation map for the current implementation. It is intended
 for a Python developer who wants to trace a run, diagnose a failure, or change
@@ -8,9 +8,9 @@ the implementation without crossing the project's ownership boundaries.
 
 For the user-facing purpose and commands, start with [`README.md`](../README.md).
 For environment setup, CLI operation, state-management workflows, and common
-troubleshooting, see [`GETTING_STARTED.md`](GETTING_STARTED.md). For a detailed
+troubleshooting, see [`Getting-Started.md`](Getting-Started.md). For a detailed
 explanation of candidate synthesis and the chapter-specific strategies, see
-[`SOLVING_ALGORITHMS.md`](SOLVING_ALGORITHMS.md). This guide instead focuses on
+[`Solving-Algorithms.md`](Solving-Algorithms.md). This guide instead focuses on
 code organization, runtime control flow, component boundaries, and safe
 extension points. The normative behavior and architectural constraints remain
 in [`docs/REQUIREMENTS.md`](../docs/REQUIREMENTS.md) and
@@ -200,7 +200,7 @@ native A=B program text; helpers such as `_infer_character_mapping()`,
 `_infer_binary_operation()`, `_matches_boolean()`, `_sorting_lines()`, and
 `_fresh_symbols()` support that work. There is no puzzle-ID-to-answer table and
 no dynamically loaded algorithm registry. See
-[`SOLVING_ALGORITHMS.md`](SOLVING_ALGORITHMS.md) for the algorithmic explanation
+[`Solving-Algorithms.md`](Solving-Algorithms.md) for the algorithmic explanation
 rather than treating this navigation guide as a strategy reference.
 
 Search-time success is advisory. Even though the current concrete proposals

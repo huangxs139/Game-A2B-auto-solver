@@ -1,6 +1,6 @@
 # A2B 自动求解器：已实现的求解算法
 
-[English](SOLVING_ALGORITHMS.md) | [简体中文](SOLVING_ALGORITHMS.zh-CN.md)
+[English](Solving-Algorithms.md) | 简体中文
 
 本文解释 `src/solver.py` 中实际合成 A=B 程序的算法：Solver 如何从谜题数据识别可能的变换、把假设编译为原生 A=B 指令、枚举哪些备选、Executor 失败怎样控制下一次试运行，以及生成的改写系统为何有效。
 

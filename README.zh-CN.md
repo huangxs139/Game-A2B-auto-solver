@@ -22,19 +22,19 @@
 
 没问题，懒是优点，不懒不会有本项目。
 
-请直接查看 [`user_docs/ANSWERS.zh-CN.txt`](user_docs/ANSWERS.zh-CN.txt)。你可以轻松找到每一题的答案，均已验证过。（留心5-5可能需要跑15分钟，喝杯咖啡吧，别打断它）
+请直接查看 [`user_docs/Verified-Answers-zh-CN.md`](user_docs/Verified-Answers-zh-CN.md) ([**Read in Wiki**](https://github.com/huangxs139/Game-A2B-auto-solver/wiki/Verified-Answers-zh-CN))。你可以轻松找到每一题的答案，均已验证过。（留心5-5可能需要跑15分钟，喝杯咖啡吧，别打断它）
 
 ### “我想亲自让 Solver 受一遍折磨”
 
-很好。你可以清除随仓库提供的解答状态，让它重新求解全部 47 道谜题。先阅读[想自己运行？](#想自己运行)，再参阅完整指南 [`user_docs/GETTING_STARTED.zh-CN.md`](user_docs/GETTING_STARTED.zh-CN.md)。
+很好。你可以清除随仓库提供的解答状态，让它重新求解全部 47 道谜题。先阅读[想自己运行？](#想自己运行)，再参阅完整指南 [`user_docs/Getting-Started-zh-CN.md`](user_docs/Getting-Started-zh-CN.md) ([**Read in Wiki**](https://github.com/huangxs139/Game-A2B-auto-solver/wiki/Getting-Started-zh-CN))。
 
 ### “我想知道它是怎样解题的”
 
-与这份 README 不同，[`user_docs/SOLVING_ALGORITHMS.zh-CN.md`](user_docs/SOLVING_ALGORITHMS.zh-CN.md) 会认真讲解：从 A=B 背后的搜索问题开始，随着六个章节逐渐复杂，介绍 Solver 的工具箱，逐步分析代表性谜题，并将全部 47 道谜题对应到求解它们的策略。阅读它可以理解的不只是产生了哪些答案，还能学会那些~~精妙~~能用的算法。
+与这份 README 不同，[`user_docs/Solving-Algorithms-zh-CN.md`](user_docs/Solving-Algorithms-zh-CN.md)([**Read in Wiki**](https://github.com/huangxs139/Game-A2B-auto-solver/wiki/Solving-Algorithms-zh-CN)) 会认真讲解：从 A=B 背后的搜索问题开始，随着六个章节逐渐复杂，介绍 Solver 的工具箱，逐步分析代表性谜题，并将全部 47 道谜题对应到求解它们的策略。阅读它可以理解的不只是产生了哪些答案，还能学会那些~~精妙~~能用的算法。
 
 ### “我想阅读代码”
 
-如果你准备修改、扩展、审计或借鉴实现，请阅读 [`user_docs/CODEBASE_GUIDE.zh-CN.md`](user_docs/CODEBASE_GUIDE.zh-CN.md)。它是开发者的代码指南：各项职责位于何处，一条命令如何流经 Manager、Solver 和 Executor，进程与数据如何通信，Rules 和持久化状态如何参与其中，以及测试套件如何组织。
+如果你准备修改、扩展、审计或借鉴实现，请阅读 [`user_docs/Codebase-Guide-zh-CN.md`](user_docs/Codebase-Guide-zh-CN.md)([**Read in Wiki**](https://github.com/huangxs139/Game-A2B-auto-solver/wiki/Codebase-Guide-zh-CN))。它是开发者的代码指南：各项职责位于何处，一条命令如何流经 Manager、Solver 和 Executor，进程与数据如何通信，Rules 和持久化状态如何参与其中，以及测试套件如何组织。
 
 ### “我发现了 Bug”
 
@@ -84,7 +84,7 @@ python a2bautosolver.py solve all
 python a2bautosolver.py solve c1_1_atob     # 以不持久化的定向模式强制运行 c1_1_atob。
 ```
 
-并发、Debug 行为、报告大小、测试、输入/输出格式和所有者审核流程详见 [`user_docs/GETTING_STARTED.zh-CN.md`](user_docs/GETTING_STARTED.zh-CN.md)。
+并发、Debug 行为、报告大小、测试、输入/输出格式和所有者审核流程详见 [`user_docs/Getting-Started-zh-CN.md`](user_docs/Getting-Started-zh-CN.md)([**Read in Wiki**](https://github.com/huangxs139/Game-A2B-auto-solver/wiki/Getting-Started-zh-CN))。
 
 ## 它怎样求解 A=B？
 
@@ -94,7 +94,7 @@ Solver 使用不断扩展的变换识别器和 A=B 程序模板工具箱。早�
 
 候选解由题目数据生成，经过重复消除和行数限制筛选，在完整数据集上执行，并在持久化前接受独立验证。
 
-更详细也更专业的算法解释请见 [`user_docs/SOLVING_ALGORITHMS.zh-CN.md`](user_docs/SOLVING_ALGORITHMS.zh-CN.md)。
+更详细也更专业的算法解释请见 [`user_docs/Solving-Algorithms-zh-CN.md`](user_docs/Solving-Algorithms-zh-CN.md)([**Read in Wiki**](https://github.com/huangxs139/Game-A2B-auto-solver/wiki/Solving-Algorithms-zh-CN))。
 
 ## 有意使用 AI 构建
 
@@ -119,7 +119,7 @@ Solver 使用不断扩展的变换识别器和 A=B 程序模板工具箱。早�
 - 最终完整本地复验通过 126,626 个给定输入/输出用例
 - 文档基线下 48 项自动化测试通过
 
-谜题输入位于 [`test_data/`](test_data/)。便于复制的已接受程序位于 [`user_docs/ANSWERS.zh-CN.txt`](user_docs/ANSWERS.zh-CN.txt)；对应的 Solver 持久化状态和验证元数据仍位于 [`test_output/`](test_output/)。
+谜题输入位于 [`test_data/`](test_data/)。便于复制的已接受程序位于 [`user_docs/Verified-Answers-zh-CN.md`](user_docs/Verified-Answers-zh-CN.md)([**Read in Wiki**](https://github.com/huangxs139/Game-A2B-auto-solver/wiki/Verified-Answers-zh-CN))；对应的 Solver 持久化状态和验证元数据仍位于 [`test_output/`](test_output/)。
 
 本地验证和真实游戏接受有意保持分离：程序能够证明候选符合全部给定用例，但只有人可以确认解能否成功通过原版游戏。
 

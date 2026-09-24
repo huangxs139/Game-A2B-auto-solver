@@ -1,10 +1,10 @@
 # A2B 自动求解器代码库指南
 
-[English](CODEBASE_GUIDE.md) | [简体中文](CODEBASE_GUIDE.zh-CN.md)
+[English](Codebase-Guide.md) | 简体中文
 
 本指南是当前代码实现的导航地图，面向希望追踪一次运行、诊断故障或在不越过项目所有权边界的前提下修改实现的 Python 开发者。
 
-面向用户的用途和命令请先阅读 [`README.zh-CN.md`](../README.zh-CN.md)；环境配置、CLI 操作、状态管理和常见故障见 [`GETTING_STARTED.zh-CN.md`](GETTING_STARTED.zh-CN.md)；候选合成和分章节策略详见 [`SOLVING_ALGORITHMS.zh-CN.md`](SOLVING_ALGORITHMS.zh-CN.md)。本指南关注代码组织、运行时控制流、组件边界和安全扩展点。规范行为与架构约束仍以 [`docs/REQUIREMENTS.md`](../docs/REQUIREMENTS.md) 和 [`docs/ARCHITECTURE.md`](../docs/ARCHITECTURE.md) 为准。
+面向用户的用途和命令请先阅读 [`README.zh-CN.md`](../README.zh-CN.md)；环境配置、CLI 操作、状态管理和常见故障见 [`Getting-Started-zh-CN.md`](Getting-Started-zh-CN.md)；候选合成和分章节策略详见 [`Solving-Algorithms-zh-CN.md`](Solving-Algorithms-zh-CN.md)。本指南关注代码组织、运行时控制流、组件边界和安全扩展点。规范行为与架构约束仍以 [`docs/REQUIREMENTS.md`](../docs/REQUIREMENTS.md) 和 [`docs/ARCHITECTURE.md`](../docs/ARCHITECTURE.md) 为准。
 
 ## 从这里开始
 
@@ -111,7 +111,7 @@ Solver 有意拆分为：
 - 第 5 章：`_numeric_candidates()`；
 - 第 6 章：`_no_keyword_candidates()`。
 
-`_generate_candidates()` 去除序列化重复程序，并丢弃 `splitlines()` 数超过 `min_lines` 的程序。各章生成器从穷尽式 I/O 数据识别变换并产生原生 A=B 文本；`_infer_character_mapping()`、`_infer_binary_operation()`、`_matches_boolean()`、`_sorting_lines()`、`_fresh_symbols()` 等辅助函数支持这一过程。不存在“谜题 ID 到答案”的表，也没有动态算法注册表；策略解释见 [`SOLVING_ALGORITHMS.zh-CN.md`](SOLVING_ALGORITHMS.zh-CN.md)。
+`_generate_candidates()` 去除序列化重复程序，并丢弃 `splitlines()` 数超过 `min_lines` 的程序。各章生成器从穷尽式 I/O 数据识别变换并产生原生 A=B 文本；`_infer_character_mapping()`、`_infer_binary_operation()`、`_matches_boolean()`、`_sorting_lines()`、`_fresh_symbols()` 等辅助函数支持这一过程。不存在“谜题 ID 到答案”的表，也没有动态算法注册表；策略解释见 [`Solving-Algorithms-zh-CN.md`](Solving-Algorithms-zh-CN.md)。
 
 搜索期成功只是建议性的。当前具体提议默认使用全部用例，但只有后续 Manager 验证通过才可写入 `test_output/`。
 

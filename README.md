@@ -1,6 +1,6 @@
 # A=B Auto Solver
 
-[English](README.md) | [简体中文](README.zh-CN.md)
+English | [简体中文](README.zh-CN.md)
 
 This repository is an automatic solver for the [**A=B**](#acknowledgements) game's complete six-chapter, 47-puzzle set. It generates real A=B programs for every puzzle, and all 47 included solutions have passed both exhaustive local validation and the original game.
 
@@ -22,19 +22,19 @@ Thanks, Codex. This is your problem now.
 
 Fair. That's why this project exists in the first place.
 
-Open [`user_docs/ANSWERS.txt`](user_docs/ANSWERS.txt). It collects all 47 accepted A=B code answers. (Notice 5-5 might take ~15 mins to run. Go grab a coffee and **DON'T POKE IT!**)
+Open [`user_docs/Verified-Answers.md`](user_docs/Verified-Answers.md)([**Read in Wiki**](https://github.com/huangxs139/Game-A2B-auto-solver/wiki/Verified-Answers)). It collects all 47 accepted A=B code answers. (Notice 5-5 might take ~15 mins to run. Go grab a coffee and **DON'T POKE IT!**)
 
 ### “I want to make the Solver suffer through a puzzle myself.”
 
-Excellent. You can wipe the included solution states and make it solve all 47 puzzles again. Start with [Want to run it yourself?](#want-to-run-it-yourself), then see [`user_docs/GETTING_STARTED.md`](user_docs/GETTING_STARTED.md) for the complete guide.
+Excellent. You can wipe the included solution states and make it solve all 47 puzzles again. Start with [Want to run it yourself?](#want-to-run-it-yourself), then see [`user_docs/Getting-Started.md`](user_docs/Getting-Started.md)([**Read in Wiki**](https://github.com/huangxs139/Game-A2B-auto-solver/wiki/Getting-Started)) for the complete guide.
 
 ### “I actually want to know how it works.”
 
-Unlike this README, [`user_docs/SOLVING_ALGORITHMS.md`](user_docs/SOLVING_ALGORITHMS.md) takes itself seriously. It starts with the search problem behind A=B, follows the Solver's toolbox as the six chapters grow more complicated, walks through representative puzzles step by step, and maps all 47 puzzles to the strategies that solve them. Read it if you want to understand not just *what* answers were produced, but *why those programs work*.
+Unlike this README, [`user_docs/Solving-Algorithms.md`](user_docs/Solving-Algorithms.md)([**Read in Wiki**](https://github.com/huangxs139/Game-A2B-auto-solver/wiki/Solving-Alogirthm)) takes itself seriously. It starts with the search problem behind A=B, follows the Solver's toolbox as the six chapters grow more complicated, walks through representative puzzles step by step, and maps all 47 puzzles to the strategies that solve them. Read it if you want to understand not just *what* answers were produced, but *why those programs work*.
 
 ### “I want to read the code.”
 
-Planning to modify, extend, audit, or borrow from the implementation? [`user_docs/CODEBASE_GUIDE.md`](user_docs/CODEBASE_GUIDE.md) is the developer's map: where each responsibility lives, how a command flows through Manager, Solver, and Executor, how processes and data communicate, where Rules and persisted state fit, and how the test suite is organized.
+Planning to modify, extend, audit, or borrow from the implementation? [`user_docs/Codebase-Guide.md`](user_docs/Codebase-Guide.md)([**Read in Wiki**](https://github.com/huangxs139/Game-A2B-auto-solver/wiki/Codebase-Guide)) is the developer's map: where each responsibility lives, how a command flows through Manager, Solver, and Executor, how processes and data communicate, where Rules and persisted state fit, and how the test suite is organized.
 
 ### “I found a bug.”
 
@@ -84,7 +84,7 @@ python a2bautosolver.py solve all
 python a2bautosolver.py solve c1_1_atob     # Force-run puzzle c1_1_atob in non-persistent targeted mode.
 ```
 
-For concurrency, Debug behavior, report sizes, tests, input/output formats, and the owner review workflow, see [user_docs/GETTING_STARTED.md](user_docs/GETTING_STARTED.md).
+For concurrency, Debug behavior, report sizes, tests, input/output formats, and the owner review workflow, see [user_docs/Getting-Started.md](user_docs/Getting-Started.md).
 
 ## How does it solve A=B?
 
@@ -94,7 +94,7 @@ The Solver uses a growing toolbox of transformation recognizers and A=B program 
 
 Candidates are generated from puzzle data, deduplicated, filtered by the puzzle's line limit, executed against the complete supplied dataset, and independently validated before persistence.
 
-The long—and much more interesting—version belongs in [`user_docs/SOLVING_ALGORITHMS.md`](user_docs/SOLVING_ALGORITHMS.md).
+The long—and much more interesting—version belongs in [`user_docs/Solving-Algorithms.md`](user_docs/Solving-Algorithms.md)([**Read in Wiki**](https://github.com/huangxs139/Game-A2B-auto-solver/wiki/Solving-Algorithms))
 
 ## Built with AI, on purpose
 
@@ -119,7 +119,7 @@ The same requirements, architecture, roadmap, feature specifications, project in
 - 126,626 supplied input/output cases passed in the final full local revalidation
 - 48 automated tests passing at the documentation baseline
 
-Puzzle inputs live in [`test_data/`](test_data/). Copy-friendly accepted programs live in [`user_docs/ANSWERS.txt`](user_docs/ANSWERS.txt); their persisted Solver state and validation metadata remain in [`test_output/`](test_output/).
+Puzzle inputs live in [`test_data/`](test_data/). Copy-friendly accepted programs live in [`user_docs/Verified-Answers.md`](user_docs/Verified-Answers.md)([**Read in Wiki**](https://github.com/huangxs139/Game-A2B-auto-solver/wiki/Verified-Answers)); their persisted Solver state and validation metadata remain in [`test_output/`](test_output/).
 
 Local validation and real-game acceptance are intentionally separate: the program can prove that a candidate matches every supplied case, but only the project owner can confirm that it is accepted by the original game.
 
