@@ -119,7 +119,7 @@ Solver 使用不断扩展的变换识别器和 A=B 程序模板工具箱。早�
 - 最终完整本地复验通过 126,626 个给定输入/输出用例
 - 文档基线下 48 项自动化测试通过
 
-谜题输入位于 [`test_data/`](test_data/)。便于复制的已接受程序位于 [`user_docs/ANSWERS.zh-CH.txt`](user_docs/ANSWERS.zh-CH.txt)；对应的 Solver 持久化状态和验证元数据仍位于 [`test_output/`](test_output/)。
+谜题输入位于 [`test_data/`](test_data/)。便于复制的已接受程序位于 [`user_docs/ANSWERS.zh-CN.txt`](user_docs/ANSWERS.zh-CN.txt)；对应的 Solver 持久化状态和验证元数据仍位于 [`test_output/`](test_output/)。
 
 本地验证和真实游戏接受有意保持分离：程序能够证明候选符合全部给定用例，但只有人可以确认解能否成功通过原版游戏。
 
